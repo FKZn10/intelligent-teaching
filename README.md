@@ -28,6 +28,4 @@
 #### 选修课程
 ![](img/select.png)
 
-## 声明
-本项目在[此项目](https://gitee.com/liaobiodestructure/Academic-Management-Course-Selection-System)的基础上修改。
 
