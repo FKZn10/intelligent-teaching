@@ -1,6 +1,5 @@
 package com.rainng.coursesystem.controller;
 
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
@@ -9,12 +8,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-
 @RestController
 @RequestMapping("/api")
+// 如果前端是不同端口（比如 Vue 的 8080），需要加上 @CrossOrigin 允许跨域请求
+@CrossOrigin
 public class UploadController {
 
-    // 老师要求的：接收图片并保存
     @PostMapping("/upload")
     public Map<String, Object> uploadImage(@RequestParam("file") MultipartFile file) {
         Map<String, Object> result = new HashMap<>();
@@ -30,27 +29,29 @@ public class UploadController {
             String uploadDirPath = System.getProperty("user.dir") + "/uploads/";
             File dir = new File(uploadDirPath);
             if (!dir.exists()) {
-                dir.mkdirs(); // 文件夹不存在就创建
+                dir.mkdirs();
             }
 
-            // 2. 提取原图片后缀名 (比如 .jpg, .png)
+            // 2. 安全提取原图片后缀名
             String originalFilename = file.getOriginalFilename();
-            String suffix = originalFilename.substring(originalFilename.lastIndexOf("."));
+            String suffix = "";
+            if (originalFilename != null && originalFilename.contains(".")) {
+                suffix = originalFilename.substring(originalFilename.lastIndexOf("."));
+            }
 
-            // 3. 给图片重新起个名字（防止前端传来的重名文件把以前的覆盖掉）
+            // 3. 生成 UUID 文件名
             String newFileName = UUID.randomUUID().toString() + suffix;
 
-            // 4. 真正保存图片到硬盘上！
-            File destFile = new File(uploadDirPath + newFileName);
+            // 4. 保存图片到硬盘
+            File destFile = new File(dir, newFileName); // 推荐使用这种 File 构造方式拼接路径
             file.transferTo(destFile);
 
-            // 5. 生成一个可以直接访问的图片 URL 路径（注意：这里不是物理路径，而是网络路径）
+            // 5. 生成网络 URL（假设你的 Spring Boot 运行在 8085 端口）
             String imageUrl = "http://localhost:8085/uploads/" + newFileName;
 
-            // 返回成功信息和图片的网络地址给前端
             result.put("code", 200);
             result.put("message", "图片保存成功！");
-            result.put("data", imageUrl); // 前端拿到这个 url 就可以直接显示图片了，你也可以把它存进数据库
+            result.put("data", imageUrl);
 
         } catch (IOException e) {
             e.printStackTrace();
