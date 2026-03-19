@@ -1,0 +1,9 @@
+### 模拟 Python 端发送质检数据
+POST http://localhost:8085/api/inspection/report
+Content-Type: application/json
+
+{
+  "model": "HAIR-X1-空调",
+  "isDamaged": false,
+  "positionCorrect": true
+}
