@@ -9,6 +9,10 @@ spring:
     password: fjx314482
   jackson:
     time-zone: Asia/Shanghai
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
 
 mybatis-plus:
   mapper-locations: classpath:mapping/*.xml
